@@ -1,0 +1,54 @@
+package com.example.dami;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class HistoryActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_history);
+
+        // Set up back button
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        // Set up RecyclerView for history list
+        RecyclerView historyRecyclerView = findViewById(R.id.historyRecyclerView);
+        historyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Sample data - Replace with actual data from your backend
+        List<DonationHistory> historyList = new ArrayList<>();
+        historyList.add(new DonationHistory("Central Hospital", "2024-05-01", "A+", "Completed"));
+        historyList.add(new DonationHistory("City Medical Center", "2024-04-15", "A+", "Completed"));
+        historyList.add(new DonationHistory("Regional Hospital", "2024-03-20", "A+", "Completed"));
+
+        HistoryAdapter adapter = new HistoryAdapter(historyList);
+        historyRecyclerView.setAdapter(adapter);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+} 
