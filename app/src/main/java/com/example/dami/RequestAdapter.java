@@ -59,7 +59,11 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
             quantityTextView.setText(String.format("%.1f units", request.getQuantity()));
             statusTextView.setText(request.getStatus());
             if (request.getBloodCenter() != null) {
+<<<<<<< HEAD
                 centerTextView.setText(request.getBloodCenter().getName());
+=======
+                centerTextView.setText(request.getBloodCenter().getNamecenter());
+>>>>>>> origin/rajae
             }
             dateTextView.setText(request.getCreatedAt().format(DATE_FORMATTER));
         }

@@ -2,15 +2,17 @@ package com.example.dami;
 
 public class BloodCenter {
     private Long id;
-    private String name;
+    private String nameadmin;
+    private String nameCenter;
     private String address;
     private String phone;
     private double latitude;
     private double longitude;
 
-    public BloodCenter(Long id, String name) {
+    public BloodCenter(Long id, String name, String namecenter) {
         this.id = id;
-        this.name = name;
+        this.nameadmin = name;
+        this.nameCenter = namecenter;
     }
 
     public Long getId() {
@@ -21,12 +23,20 @@ public class BloodCenter {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getNameadmin() {
+        return nameadmin;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNameadmin(String nameadmin) {
+        this.nameadmin = nameadmin;
+    }
+
+    public String getNamecenter() {
+        return nameCenter;
+    }
+
+    public void setNamecenter(String namecenter) {
+        this.nameCenter = namecenter;
     }
 
     public String getAddress() {
@@ -60,4 +70,4 @@ public class BloodCenter {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-} 
+}

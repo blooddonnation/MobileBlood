@@ -11,12 +11,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+<<<<<<< HEAD
+=======
+import com.example.dami.retrofit.CenterApi;
+>>>>>>> origin/rajae
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
 
+<<<<<<< HEAD
+=======
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+>>>>>>> origin/rajae
 public class RequestFormActivity extends AppCompatActivity {
     private AutoCompleteTextView bloodTypeDropdown;
     private TextInputEditText quantityEditText;
@@ -38,6 +51,7 @@ public class RequestFormActivity extends AppCompatActivity {
 
         // Set up blood type dropdown
         String[] bloodTypes = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+<<<<<<< HEAD
         ArrayAdapter<String> bloodTypeAdapter = new ArrayAdapter<>(this, 
             android.R.layout.simple_dropdown_item_1line, bloodTypes);
         bloodTypeDropdown.setAdapter(bloodTypeAdapter);
@@ -52,6 +66,14 @@ public class RequestFormActivity extends AppCompatActivity {
         ArrayAdapter<BloodCenter> centerAdapter = new ArrayAdapter<>(this,
             android.R.layout.simple_dropdown_item_1line, bloodCenters);
         bloodCenterDropdown.setAdapter(centerAdapter);
+=======
+        ArrayAdapter<String> bloodTypeAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, bloodTypes);
+        bloodTypeDropdown.setAdapter(bloodTypeAdapter);
+
+        // Fetch blood centers from API
+        fetchBloodCenters();
+>>>>>>> origin/rajae
 
         // Set up back button
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -72,15 +94,55 @@ public class RequestFormActivity extends AppCompatActivity {
         // Handle window insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
             v.setPadding(
+<<<<<<< HEAD
                 insets.getInsets(WindowInsetsCompat.Type.systemBars()).left,
                 insets.getInsets(WindowInsetsCompat.Type.systemBars()).top,
                 insets.getInsets(WindowInsetsCompat.Type.systemBars()).right,
                 insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+=======
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).left,
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).top,
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).right,
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+>>>>>>> origin/rajae
             );
             return insets;
         });
     }
 
+<<<<<<< HEAD
+=======
+    private void fetchBloodCenters() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8082/")  // Replace with your actual backend URL
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        CenterApi centerApi = retrofit.create(CenterApi.class);
+        Call<List<BloodCenter>> call = centerApi.getCenters();
+
+        call.enqueue(new Callback<List<BloodCenter>>() {
+            @Override
+            public void onResponse(Call<List<BloodCenter>> call, Response<List<BloodCenter>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Set the blood centers received from the API
+                    bloodCenters = response.body();
+                    ArrayAdapter<BloodCenter> centerAdapter = new ArrayAdapter<>(RequestFormActivity.this,
+                            android.R.layout.simple_dropdown_item_1line, bloodCenters);
+                    bloodCenterDropdown.setAdapter(centerAdapter);
+                } else {
+                    Toast.makeText(RequestFormActivity.this, "Failed to load blood centers", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<BloodCenter>> call, Throwable t) {
+                Toast.makeText(RequestFormActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+>>>>>>> origin/rajae
     private void submitRequest() {
         // Get values from form
         String bloodType = bloodTypeDropdown.getText().toString().trim();
@@ -96,7 +158,11 @@ public class RequestFormActivity extends AppCompatActivity {
         // Find the selected blood center
         BloodCenter selectedCenter = null;
         for (BloodCenter center : bloodCenters) {
+<<<<<<< HEAD
             if (center.getName().equals(selectedCenterName)) {
+=======
+            if (center.getNamecenter().equals(selectedCenterName)) {
+>>>>>>> origin/rajae
                 selectedCenter = center;
                 break;
             }
@@ -116,9 +182,15 @@ public class RequestFormActivity extends AppCompatActivity {
 
             // Create request object
             BloodDonationRequest request = new BloodDonationRequest(
+<<<<<<< HEAD
                 bloodType,
                 quantity,
                 selectedCenter.getId()
+=======
+                    bloodType,
+                    quantity,
+                    selectedCenter.getId()
+>>>>>>> origin/rajae
             );
 
             // TODO: Send request to backend API
@@ -130,4 +202,8 @@ public class RequestFormActivity extends AppCompatActivity {
             Toast.makeText(this, "Please enter a valid quantity", Toast.LENGTH_SHORT).show();
         }
     }
+<<<<<<< HEAD
 } 
+=======
+}
+>>>>>>> origin/rajae
