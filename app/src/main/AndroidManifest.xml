@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.dami">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -26,39 +25,39 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".activity_sign_in"
+            android:name=".activities.SignInActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SignUpActivity"
+            android:name=".activities.SignUpActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ProfileActivity"
+            android:name=".activities.ProfileActivity"
             android:exported="false" />
 
         <activity
-            android:name=".CentersActivity"
+            android:name=".activities.CentersActivity"
             android:exported="false" />
 
         <activity
-            android:name=".DonationsActivity"
+            android:name=".activities.DonationsActivity"
             android:exported="false" />
 
         <activity
-            android:name=".HistoryActivity"
+            android:name=".activities.HistoryActivity"
             android:exported="false" />
 
         <activity
-            android:name=".RequestsActivity"
+            android:name=".activities.RequestsActivity"
             android:exported="false" />
 
         <activity
-            android:name=".RequestFormActivity"
+            android:name=".activities.RequestFormActivity"
             android:exported="false" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

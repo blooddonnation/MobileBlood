@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.activities;
 
 import android.os.Bundle;
 import android.view.View;
@@ -11,7 +11,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.dami.R;
+import com.example.dami.models.BloodCenter;
+import com.example.dami.models.BloodDonationRequest;
 import com.example.dami.retrofit.CenterApi;
+import com.example.dami.retrofit.RetrofitClient;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 

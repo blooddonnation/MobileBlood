@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import com.example.dami.R;
+import com.example.dami.models.BloodDonationRequest;
 
 public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHolder> {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");

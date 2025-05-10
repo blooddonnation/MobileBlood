@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.activities;
 
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.dami.R;
+import com.example.dami.adapters.HistoryAdapter;
+import com.example.dami.models.DonationHistory;
 
 public class HistoryActivity extends AppCompatActivity {
 

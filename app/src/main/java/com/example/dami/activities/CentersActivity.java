@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.activities;
 
 import android.os.Bundle;
 import android.view.View;
@@ -11,7 +11,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.dami.R;
+import com.example.dami.models.BloodCenter;
 import com.example.dami.retrofit.CenterApi;
+import com.example.dami.retrofit.RetrofitClient;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
@@ -28,6 +31,7 @@ import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;

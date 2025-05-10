@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.activities;
 
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+
+import com.example.dami.R;
 
 public class ProfileActivity extends AppCompatActivity {
     private TextInputEditText nameEditText;

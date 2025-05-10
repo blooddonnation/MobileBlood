@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.models;
 
 public class DonationHistory {
     private String date;

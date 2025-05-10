@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.api;
 
 public class ApiConfig {
     // Base URL for the API

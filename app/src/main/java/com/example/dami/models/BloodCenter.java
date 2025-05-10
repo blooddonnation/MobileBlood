@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.models;
 
 public class BloodCenter {
     private Long id;

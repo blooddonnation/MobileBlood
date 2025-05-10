@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +16,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.dami.R;
+import com.example.dami.adapters.RequestAdapter;
+import com.example.dami.models.BloodDonationRequest;
 
 public class RequestsActivity extends AppCompatActivity {
     private RecyclerView requestsRecyclerView;

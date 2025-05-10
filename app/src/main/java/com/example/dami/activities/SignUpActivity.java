@@ -1,11 +1,10 @@
-package com.example.dami;
+package com.example.dami.activities;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -18,8 +17,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.dami.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.button.MaterialButton;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,7 +39,7 @@ public class SignUpActivity extends AppCompatActivity {
     private TextInputEditText emailEditText;
     private EditText dateOfBirthEditText;
     private Spinner bloodTypeSpinner;
-    private Button signUpButton;
+    private MaterialButton signUpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,22 +129,10 @@ public class SignUpActivity extends AppCompatActivity {
                 // (e.g., sending data to a backend service, Firebase, etc.)
                 Toast.makeText(SignUpActivity.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
                 
-                // Navigate to sign in page
-                Intent intent = new Intent(SignUpActivity.this, activity_sign_in.class);
+                // Navigate to main activity
+                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish(); // Close the sign up activity
-            }
-        });
-
-        // Find back button
-        Button backButton = findViewById(R.id.backToSignInButton);
-        
-        // Set up back button click listener
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Return to sign in
-                finish();
             }
         });
 

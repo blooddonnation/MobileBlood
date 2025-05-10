@@ -11,61 +11,60 @@ import android.location.Location;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
-
+import android.provider.Settings;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-
-import com.example.dami.ApiConfig;
-import com.example.dami.MainActivity;
 import com.example.dami.R;
+import com.example.dami.activities.MainActivity;
+import com.example.dami.api.ApiConfig;
 import com.example.dami.api.PositionApi;
-import com.example.dami.model.GpsPosition;
+import com.example.dami.models.GpsPosition;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
-
+import java.io.IOException;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
-
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LocationService extends Service {
+    private static final String TAG = "LocationService";
     private static final String CHANNEL_ID = "LocationServiceChannel";
     private static final int NOTIFICATION_ID = 1;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
     private PositionApi positionApi;
-    private String macAddress;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        createNotificationChannel();
-        startForeground(NOTIFICATION_ID, createNotification());
-        
-        // Initialize location services
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        
-        // Get MAC address
-        macAddress = getMacAddress();
-        
-        // Initialize Retrofit
+        createNotificationChannel();
+        setupLocationCallback();
+        setupRetrofit();
+    }
+
+    private void setupRetrofit() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ApiConfig.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        
         positionApi = retrofit.create(PositionApi.class);
-        
-        // Create location callback
+    }
+
+    private void setupLocationCallback() {
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -79,101 +78,73 @@ public class LocationService extends Service {
         };
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        startLocationUpdates();
-        return START_STICKY;
-    }
-
-    private void startLocationUpdates() {
-        try {
-            LocationRequest locationRequest = LocationRequest.create()
-                    .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
-                    .setInterval(900); // 15 minutes
-
-            fusedLocationClient.requestLocationUpdates(
-                    locationRequest,
-                    locationCallback,
-                    Looper.getMainLooper()
-            );
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void sendLocationToServer(Location location) {
-        GpsPosition position = new GpsPosition(macAddress, location.getLatitude(), location.getLongitude());
-        
+        String deviceId = generateDeviceId();
+        GpsPosition position = new GpsPosition(deviceId, location.getLatitude(), location.getLongitude());
+
         positionApi.updatePosition(position).enqueue(new Callback<GpsPosition>() {
             @Override
-            public void onResponse(Call<GpsPosition> call, Response<GpsPosition> response) {
+            public void onResponse(Call<GpsPosition> call, retrofit2.Response<GpsPosition> response) {
                 if (response.isSuccessful()) {
-                    android.util.Log.d("LocationService", "Position updated successfully");
+                    android.util.Log.d(TAG, "Position updated successfully");
                 } else {
-                    android.util.Log.e("LocationService", "Failed to update position: " + response.code());
+                    android.util.Log.e(TAG, "Error updating position: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<GpsPosition> call, Throwable t) {
-                android.util.Log.e("LocationService", "Error updating position: " + t.getMessage());
+                android.util.Log.e(TAG, "Error updating position: " + t.getMessage());
             }
         });
     }
 
-    private String getMacAddress() {
+    private String generateDeviceId() {
+        String deviceId = null;
+
+        // Try to get MAC address first
         try {
-            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-            android.util.Log.d("LocationService", "Available network interfaces: " + all.size());
-            
-            for (NetworkInterface nif : all) {
-                android.util.Log.d("LocationService", "Checking interface: " + nif.getName());
-                
-                // Skip loopback and inactive interfaces
-                if (nif.isLoopback() || !nif.isUp()) {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface nif : interfaces) {
+                if (!nif.getName().equalsIgnoreCase("wlan0")) {
                     continue;
                 }
-
                 byte[] macBytes = nif.getHardwareAddress();
                 if (macBytes == null) {
-                    android.util.Log.d("LocationService", "No MAC address for interface: " + nif.getName());
                     continue;
                 }
-
-                StringBuilder res1 = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
                 for (byte b : macBytes) {
-                    res1.append(String.format("%02X:", b));
+                    sb.append(String.format("%02X:", b));
                 }
-
-                if (res1.length() > 0) {
-                    res1.deleteCharAt(res1.length() - 1);
-                    String macAddress = res1.toString();
-                    android.util.Log.d("LocationService", "Found MAC address: " + macAddress + " for interface: " + nif.getName());
-                    return macAddress;
+                if (sb.length() > 0) {
+                    sb.deleteCharAt(sb.length() - 1);
                 }
+                deviceId = sb.toString();
+                break;
             }
-        } catch (Exception ex) {
-            android.util.Log.e("LocationService", "Error getting MAC address: " + ex.getMessage());
-        }
-        
-        // If we couldn't get MAC address, use device info
-        String deviceId;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            try {
-                deviceId = Build.getSerial();
-            } catch (SecurityException e) {
-                android.util.Log.w("LocationService", "No permission to get serial number: " + e.getMessage());
-                deviceId = null;
-            }
-        } else {
-            deviceId = Build.SERIAL;
+        } catch (Exception e) {
+            android.util.Log.e(TAG, "Error getting MAC address: " + e.getMessage());
         }
 
-        if (deviceId == null || deviceId.isEmpty() || deviceId.equals("unknown")) {
-            deviceId = Build.MANUFACTURER + Build.MODEL + Build.DEVICE;
+        // If MAC address is not available, use Android ID
+        if (deviceId == null || deviceId.isEmpty()) {
+            deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         }
-        android.util.Log.w("LocationService", "Using fallback device ID: " + deviceId);
+
+        // If Android ID is not available, use device info
+        if (deviceId == null || deviceId.isEmpty()) {
+            deviceId = Build.MANUFACTURER + "_" + Build.MODEL + "_" + Build.DEVICE;
+        }
+
         return deviceId;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        startForeground(NOTIFICATION_ID, createNotification());
+        startLocationUpdates();
+        return START_STICKY;
     }
 
     private void createNotificationChannel() {
@@ -181,7 +152,7 @@ public class LocationService extends Service {
             NotificationChannel serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
                     "Location Service Channel",
-                    NotificationManager.IMPORTANCE_LOW
+                    NotificationManager.IMPORTANCE_DEFAULT
             );
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
@@ -190,23 +161,39 @@ public class LocationService extends Service {
 
     private Notification createNotification() {
         Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                notificationIntent,
+                PendingIntent.FLAG_IMMUTABLE
+        );
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Location Tracking")
-                .setContentText("Tracking your location")
+                .setContentTitle("Location Service")
+                .setContentText("Tracking location...")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentIntent(pendingIntent)
                 .build();
     }
 
+    private void startLocationUpdates() {
+        LocationRequest locationRequest = new LocationRequest.Builder(900000)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .build();
+
+        try {
+            fusedLocationClient.requestLocationUpdates(locationRequest,
+                    locationCallback,
+                    Looper.getMainLooper());
+        } catch (SecurityException e) {
+            android.util.Log.e(TAG, "Error requesting location updates: " + e.getMessage());
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (fusedLocationClient != null && locationCallback != null) {
-            fusedLocationClient.removeLocationUpdates(locationCallback);
-        }
+        fusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
     @Nullable

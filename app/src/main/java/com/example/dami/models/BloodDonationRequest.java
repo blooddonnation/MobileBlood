@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.models;
 
 import java.time.LocalDateTime;
 

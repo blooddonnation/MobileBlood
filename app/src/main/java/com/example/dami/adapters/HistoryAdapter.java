@@ -1,4 +1,4 @@
-package com.example.dami;
+package com.example.dami.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+
+import com.example.dami.R;
+import com.example.dami.models.DonationHistory;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
     private List<DonationHistory> historyList;
