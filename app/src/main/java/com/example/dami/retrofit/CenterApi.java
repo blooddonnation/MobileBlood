@@ -7,5 +7,5 @@ import retrofit2.http.GET;
 
 public interface CenterApi {
     @GET("api/centers")
-    Call<List<BloodCenter>> getCenters();
+    Call<List<BloodCenter>> getAllCenters();
 }
