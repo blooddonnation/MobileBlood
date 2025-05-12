@@ -2,13 +2,13 @@
 <resources>
     <string-array name="blood_types">
         <item>Select Blood Type</item>
-        <item>A+</item>
-        <item>A-</item>
-        <item>B+</item>
-        <item>B-</item>
-        <item>AB+</item>
-        <item>AB-</item>
-        <item>O+</item>
-        <item>O-</item>
+        <item>A_POSITIVE</item>
+        <item>A_NEGATIVE</item>
+        <item>B_POSITIVE</item>
+        <item>B_NEGATIVE</item>
+        <item>AB_POSITIVE</item>
+        <item>AB_NEGATIVE</item>
+        <item>O_POSITIVE</item>
+        <item>O_NEGATIVE</item>
     </string-array>
 </resources> 

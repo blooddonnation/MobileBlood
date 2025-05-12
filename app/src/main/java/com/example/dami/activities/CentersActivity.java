@@ -87,7 +87,7 @@ public class CentersActivity extends AppCompatActivity {
 
         // Initialize Retrofit
         Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/")
+            .baseUrl("http://10.0.2.2:8083/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 

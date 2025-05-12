@@ -13,8 +13,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dami.R;
+import com.example.dami.adapters.DonationAdapter;
+import com.example.dami.models.DonationHistory;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DonationsActivity extends AppCompatActivity {
+    private RecyclerView donationsRecyclerView;
+    private DonationAdapter donationAdapter;
+    private List<DonationHistory> donations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,14 +42,37 @@ public class DonationsActivity extends AppCompatActivity {
         });
 
         // Set up RecyclerView for donations list
-        RecyclerView donationsRecyclerView = findViewById(R.id.donationsRecyclerView);
+        donationsRecyclerView = findViewById(R.id.donationsRecyclerView);
         donationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        // TODO: Set up adapter with donations data
+        
+        // Initialize donations list and adapter
+        donations = new ArrayList<>();
+        donationAdapter = new DonationAdapter(donations);
+        donationsRecyclerView.setAdapter(donationAdapter);
+
+        // Load sample data
+        loadSampleData();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
+
+    private void loadSampleData() {
+        // Add sample donations
+        donations.add(createSampleDonation("Central Blood Bank", "A+", "15/03/2024", "COMPLETED"));
+        donations.add(createSampleDonation("City Hospital", "O-", "20/03/2024", "SCHEDULED"));
+        donations.add(createSampleDonation("Regional Medical Center", "B+", "25/03/2024", "SCHEDULED"));
+        donations.add(createSampleDonation("Community Health Center", "AB+", "10/03/2024", "COMPLETED"));
+        donations.add(createSampleDonation("General Hospital", "A-", "05/03/2024", "CANCELLED"));
+        
+        donationAdapter.notifyDataSetChanged();
+    }
+
+    private DonationHistory createSampleDonation(String centerName, String bloodType, 
+            String date, String status) {
+        return new DonationHistory(centerName, bloodType, date, status);
     }
 } 

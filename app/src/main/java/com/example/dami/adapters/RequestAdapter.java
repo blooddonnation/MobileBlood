@@ -12,63 +12,69 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.example.dami.R;
-import com.example.dami.models.BloodDonationRequest;
+import com.example.dami.models.BloodDonationRequestResponse;
 
-public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHolder> {
+public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestViewHolder> {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private List<BloodDonationRequest> requests;
+    private List<BloodDonationRequestResponse> requestList;
 
-    public RequestAdapter(List<BloodDonationRequest> requests) {
-        this.requests = requests;
+    public RequestAdapter(List<BloodDonationRequestResponse> requestList) {
+        this.requestList = requestList;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_request, parent, false);
-        return new ViewHolder(view);
+        return new RequestViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        BloodDonationRequest request = requests.get(position);
-        holder.bind(request);
+    public void onBindViewHolder(@NonNull RequestViewHolder holder, int position) {
+        BloodDonationRequestResponse request = requestList.get(position);
+        holder.bloodTypeTextView.setText(request.getBloodType());
+        holder.quantityTextView.setText(String.format("%.1f units", request.getQuantity()));
+        holder.statusTextView.setText(request.getStatus());
+        
+        // Set status color based on the status
+        int statusColor;
+        switch (request.getStatus().toUpperCase()) {
+            case "APPROVED":
+                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_approved);
+                break;
+            case "PENDING":
+                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_pending);
+                break;
+            case "REJECTED":
+                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_rejected);
+                break;
+            default:
+                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_default);
+        }
+        holder.statusTextView.setTextColor(statusColor);
     }
 
     @Override
     public int getItemCount() {
-        return requests.size();
+        return requestList.size();
     }
 
-    public void updateRequests(List<BloodDonationRequest> newRequests) {
-        this.requests = newRequests;
+    public void updateRequests(List<BloodDonationRequestResponse> newRequests) {
+        this.requestList = newRequests;
         notifyDataSetChanged();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView bloodTypeTextView;
-        private final TextView quantityTextView;
-        private final TextView centerTextView;
-        private final TextView statusTextView;
-        private final TextView dateTextView;
+    static class RequestViewHolder extends RecyclerView.ViewHolder {
+        TextView bloodTypeTextView;
+        TextView quantityTextView;
+        TextView statusTextView;
 
-        public ViewHolder(@NonNull View itemView) {
+        RequestViewHolder(View itemView) {
             super(itemView);
             bloodTypeTextView = itemView.findViewById(R.id.bloodTypeTextView);
             quantityTextView = itemView.findViewById(R.id.quantityTextView);
-            centerTextView = itemView.findViewById(R.id.centerTextView);
             statusTextView = itemView.findViewById(R.id.statusTextView);
-            dateTextView = itemView.findViewById(R.id.dateTextView);
-        }
-
-        public void bind(BloodDonationRequest request) {
-            bloodTypeTextView.setText(request.getBloodType());
-            quantityTextView.setText(String.format("%.1f units", request.getQuantity()));
-            centerTextView.setText(request.getBloodCenter() != null ? 
-                request.getBloodCenter().getNamecenter() : "Center not specified");
-            statusTextView.setText(request.getStatus());
-            dateTextView.setText(request.getCreatedAt().format(DATE_FORMATTER));
         }
     }
 } 

@@ -58,7 +58,7 @@ public class LocationService extends Service {
 
     private void setupRetrofit() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ApiConfig.BASE_URL)
+                .baseUrl(ApiConfig.BASE_URL_Position_Tracking)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         positionApi = retrofit.create(PositionApi.class);

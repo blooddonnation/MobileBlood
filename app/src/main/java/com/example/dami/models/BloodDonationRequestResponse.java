@@ -1,27 +1,23 @@
 package com.example.dami.models;
 
-import com.google.gson.annotations.SerializedName;
-
-public class BloodDonationRequest {
-    @SerializedName("id")
+public class BloodDonationRequestResponse {
     private Long id;
-
-    @SerializedName("bloodType")
     private String bloodType;
-
-    @SerializedName("status")
     private String status;
-
-    @SerializedName("quantity")
-    private Double quantity;
-
-    @SerializedName("requestedBy")
+    private double quantity;
     private Long requestedBy;
-
-    @SerializedName("bloodCenter")
     private Long bloodCenter;
 
-    public BloodDonationRequest() {
+    public BloodDonationRequestResponse() {
+    }
+
+    public BloodDonationRequestResponse(Long id, String bloodType, String status, double quantity, Long requestedBy, Long bloodCenter) {
+        this.id = id;
+        this.bloodType = bloodType;
+        this.status = status;
+        this.quantity = quantity;
+        this.requestedBy = requestedBy;
+        this.bloodCenter = bloodCenter;
     }
 
     public Long getId() {
@@ -48,11 +44,11 @@ public class BloodDonationRequest {
         this.status = status;
     }
 
-    public Double getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Double quantity) {
+    public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
 
@@ -70,17 +66,5 @@ public class BloodDonationRequest {
 
     public void setBloodCenter(Long bloodCenter) {
         this.bloodCenter = bloodCenter;
-    }
-
-    @Override
-    public String toString() {
-        return "BloodDonationRequest{" +
-                "id=" + id +
-                ", bloodType='" + bloodType + '\'' +
-                ", status='" + status + '\'' +
-                ", quantity=" + quantity +
-                ", requestedBy=" + requestedBy +
-                ", bloodCenter=" + bloodCenter +
-                '}';
     }
 } 

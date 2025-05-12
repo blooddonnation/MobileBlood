@@ -18,14 +18,26 @@ import androidx.annotation.NonNull;
 
 import com.example.dami.R;
 import com.example.dami.service.LocationService;
+import com.example.dami.utils.TokenManager;
 
 public class MainActivity extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private TokenManager tokenManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        // Initialize TokenManager
+        tokenManager = new TokenManager(this);
+        
+        // Check if user is logged in
+        if (!tokenManager.isLoggedIn()) {
+            startActivity(new Intent(this, SignInActivity.class));
+            finish();
+            return;
+        }
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
@@ -34,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
         CardView donationsCard = findViewById(R.id.donationsCard);
         CardView requestsCard = findViewById(R.id.requestsCard);
         CardView historyCard = findViewById(R.id.historyCard);
-        CardView profileCard = findViewById(R.id.profileCard);
 
         // Set click listeners
         centersCard.setOnClickListener(new View.OnClickListener() {
@@ -56,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         requestsCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, RequestsActivity.class);
+                Intent intent = new Intent(MainActivity.this, RequestFormActivity.class);
                 startActivity(intent);
             }
         });
@@ -65,14 +76,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        profileCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         });
