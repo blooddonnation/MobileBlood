@@ -13,7 +13,7 @@ public class BloodDonationRequest {
     private String status;
 
     @SerializedName("quantity")
-    private Double quantity;
+    private double quantity;
 
     @SerializedName("requestedBy")
     private Long requestedBy;
@@ -48,7 +48,7 @@ public class BloodDonationRequest {
         this.status = status;
     }
 
-    public Double getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 

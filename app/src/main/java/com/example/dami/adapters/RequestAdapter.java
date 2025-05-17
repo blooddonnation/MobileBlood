@@ -27,17 +27,25 @@ import org.json.JSONObject;
 
 public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestViewHolder> {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final long userId;
     private List<BloodDonationRequestResponse> requestList;
 
-    public RequestAdapter(List<BloodDonationRequestResponse> requestList) {
+    // Constructor with userId
+    public RequestAdapter(List<BloodDonationRequestResponse> requestList, long userId) {
         this.requestList = requestList;
+        this.userId = userId;
+    }
+
+    // Overloaded constructor with default userId = 1
+    public RequestAdapter(List<BloodDonationRequestResponse> requestList) {
+        this(requestList, 1);
     }
 
     @NonNull
     @Override
     public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_request, parent, false);
+                .inflate(R.layout.item_donation, parent, false);
         return new RequestViewHolder(view);
     }
 
@@ -48,7 +56,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
         holder.quantityTextView.setText(String.format("%.1f units", request.getQuantity()));
         holder.statusTextView.setText(request.getStatus());
         holder.centerNameTextView.setText(String.valueOf(request.getBloodCenter()));
-        // Set status color based on the status
+
         int statusColor;
         switch (request.getStatus().toUpperCase()) {
             case "APPROVED":
@@ -63,39 +71,28 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
             default:
                 statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_default);
         }
+
         holder.statusTextView.setTextColor(statusColor);
         holder.donateButton.setOnClickListener(v -> {
-            // 🔐 You can get donorId from SharedPreferences or pass it to the adapter
-            SharedPreferences prefs = v.getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-            long donorId = prefs.getLong("donorId", -1); // Make sure to store this during login
-
-            if (donorId == -1) {
-                Toast.makeText(v.getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            long requestId = request.getId(); // this comes from the current request item
+            long requestId = request.getId();
 
             JSONObject jsonBody = new JSONObject();
             try {
-                jsonBody.put("donorId", donorId);
                 jsonBody.put("donationRequest", requestId);
+                jsonBody.put("donorId", userId); // use passed userId
+
             } catch (JSONException e) {
                 e.printStackTrace();
                 return;
             }
 
-            String url = "http://10.0.2.2:8080/api/donations"; // replace with your actual server IP
+            String url = "http://10.0.2.2:8080/api/donations";
 
             RequestQueue queue = Volley.newRequestQueue(v.getContext());
 
             JsonObjectRequest requestObj = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
-                    response -> {
-                        Toast.makeText(v.getContext(), "Donation successful!", Toast.LENGTH_SHORT).show();
-                    },
-                    error -> {
-                        Toast.makeText(v.getContext(), "Donation failed: " + error.toString(), Toast.LENGTH_LONG).show();
-                    }
+                    response -> Toast.makeText(v.getContext(), "Donation successful!", Toast.LENGTH_SHORT).show(),
+                    error -> Toast.makeText(v.getContext(), "Donation failed: " + error.toString(), Toast.LENGTH_LONG).show()
             );
 
             queue.add(requestObj);
@@ -108,13 +105,8 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
     }
 
     public void updateRequests(List<BloodDonationRequestResponse> newRequests) {
-//        this.requestList = newRequests;
-//        notifyDataSetChanged();
-        // Clear the old data
         this.requestList.clear();
-        // Add new data
         this.requestList.addAll(newRequests);
-        // Notify the adapter that the data set has changed
         notifyDataSetChanged();
     }
 
@@ -123,17 +115,15 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
         TextView quantityTextView;
         TextView statusTextView;
         TextView centerNameTextView;
-        TextView centerLocationTextView;
         Button donateButton;
+
         RequestViewHolder(View itemView) {
             super(itemView);
             bloodTypeTextView = itemView.findViewById(R.id.bloodTypeTextView);
             quantityTextView = itemView.findViewById(R.id.quantityTextView);
             statusTextView = itemView.findViewById(R.id.statusTextView);
             centerNameTextView = itemView.findViewById(R.id.centerNameTextView);
-            centerLocationTextView = itemView.findViewById(R.id.centerLocationTextView);
             donateButton = itemView.findViewById(R.id.donateButton);
         }
     }
-
 }

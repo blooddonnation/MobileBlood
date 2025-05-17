@@ -22,21 +22,21 @@ import com.example.dami.utils.TokenManager;
 
 public class MainActivity extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private TokenManager tokenManager;
+    //private TokenManager tokenManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Initialize TokenManager
-        tokenManager = new TokenManager(this);
-        
-        // Check if user is logged in
-        if (!tokenManager.isLoggedIn()) {
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-            return;
-        }
+//        tokenManager = new TokenManager(this);
+//
+//        // Check if user is logged in
+//        if (!tokenManager.isLoggedIn()) {
+//            startActivity(new Intent(this, SignInActivity.class));
+//            finish();
+//            return;
+//        }
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);

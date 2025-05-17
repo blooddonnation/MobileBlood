@@ -4,14 +4,14 @@ public class BloodDonationRequestResponse {
     private Long id;
     private String bloodType;
     private String status;
-    private double quantity;
+    private Double quantity;
     private Long requestedBy;
     private Long bloodCenter;
 
     public BloodDonationRequestResponse() {
     }
 
-    public BloodDonationRequestResponse(Long id, String bloodType, String status, double quantity, Long requestedBy, Long bloodCenter) {
+    public BloodDonationRequestResponse(Long id, String bloodType, String status,Double quantity, Long requestedBy, Long bloodCenter) {
         this.id = id;
         this.bloodType = bloodType;
         this.status = status;

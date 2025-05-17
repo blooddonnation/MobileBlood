@@ -161,9 +161,10 @@ public class SignInActivity extends AppCompatActivity {
                                 if (response.isSuccessful() && response.body() != null) {
                                     // Store the token and user ID
                                     String token = response.body().getToken();
+                                    Long userId = response.body().getUserId();
                                     tokenManager.saveToken(token);
                                     tokenManager.saveUserId(username); // Using username as user ID
-                                    
+                                    //tokenManager.saveUserId(userId);
                                     // Navigate to main activity
                                     Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                                     startActivity(intent);
