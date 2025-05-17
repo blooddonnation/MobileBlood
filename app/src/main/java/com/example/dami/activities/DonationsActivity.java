@@ -3,12 +3,14 @@ package com.example.dami.activities;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
@@ -16,19 +18,23 @@ import com.android.volley.toolbox.Volley;
 import com.example.dami.R;
 import com.example.dami.adapters.RequestAdapter;
 import com.example.dami.models.BloodDonationRequestResponse;
+import com.example.dami.utils.TokenManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DonationsActivity extends AppCompatActivity {
 
     private RecyclerView donationsRecyclerView;
     private RequestAdapter requestAdapter;
     private RequestQueue requestQueue;
+    private TokenManager tokenManager;
 
     private static final String TAG = "DonationsActivity";
     private static final String BASE_URL = "http://10.0.2.2:8080/api/requests";
@@ -38,6 +44,7 @@ public class DonationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donations);
 
+        tokenManager = new TokenManager(this);
         setupViews();
         fetchDonationRequests();
     }
@@ -64,8 +71,27 @@ public class DonationsActivity extends AppCompatActivity {
                     List<BloodDonationRequestResponse> donationList = parseDonationRequests(response);
                     requestAdapter.updateRequests(donationList);
                 },
-                error -> Log.e(TAG, "Failed to fetch donation requests", error)
-        );
+                error -> {
+                    Log.e(TAG, "Failed to fetch donation requests", error);
+                    String errorMessage = "Failed to fetch donation requests";
+                    if (error instanceof AuthFailureError) {
+                        errorMessage = "Authentication failed. Please log in again.";
+                    } else if (error.networkResponse != null) {
+                        errorMessage = "Server error: " + error.networkResponse.statusCode;
+                    }
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String token = tokenManager.getToken();
+                if (token != null) {
+                    headers.put("Authorization", "Bearer " + token);
+                }
+                return headers;
+            }
+        };
 
         requestQueue.add(jsonArrayRequest);
     }

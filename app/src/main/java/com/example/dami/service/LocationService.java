@@ -81,6 +81,10 @@ public class LocationService extends Service {
     private void sendLocationToServer(Location location) {
         String deviceId = generateDeviceId();
         GpsPosition position = new GpsPosition(deviceId, location.getLatitude(), location.getLongitude());
+        
+        android.util.Log.d(TAG, "Attempting to send location - DeviceId: " + deviceId + 
+            ", Lat: " + location.getLatitude() + 
+            ", Lng: " + location.getLongitude());
 
         positionApi.updatePosition(position).enqueue(new Callback<GpsPosition>() {
             @Override
@@ -88,13 +92,22 @@ public class LocationService extends Service {
                 if (response.isSuccessful()) {
                     android.util.Log.d(TAG, "Position updated successfully");
                 } else {
-                    android.util.Log.e(TAG, "Error updating position: " + response.message());
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "No error body";
+                        android.util.Log.e(TAG, "Error updating position: " + response.code() + 
+                            " - " + response.message() + 
+                            "\nError body: " + errorBody);
+                    } catch (IOException e) {
+                        android.util.Log.e(TAG, "Error reading error body: " + e.getMessage());
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<GpsPosition> call, Throwable t) {
-                android.util.Log.e(TAG, "Error updating position: " + t.getMessage());
+                android.util.Log.e(TAG, "Error updating position: " + t.getMessage() + 
+                    "\nCause: " + (t.getCause() != null ? t.getCause().getMessage() : "No cause") +
+                    "\nStack trace: " + android.util.Log.getStackTraceString(t));
             }
         });
     }
@@ -177,14 +190,16 @@ public class LocationService extends Service {
     }
 
     private void startLocationUpdates() {
-        LocationRequest locationRequest = new LocationRequest.Builder(900000)
+        LocationRequest locationRequest = new LocationRequest.Builder(30000)
                 .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .setMinUpdateIntervalMillis(15000)
                 .build();
 
         try {
             fusedLocationClient.requestLocationUpdates(locationRequest,
                     locationCallback,
                     Looper.getMainLooper());
+            android.util.Log.d(TAG, "Location updates requested successfully");
         } catch (SecurityException e) {
             android.util.Log.e(TAG, "Error requesting location updates: " + e.getMessage());
         }

@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="New Blood Request"
+        android:text="New Request"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -41,6 +41,21 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="Blood Center"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                <AutoCompleteTextView
+                    android:id="@+id/centerDropdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -72,8 +87,6 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-
-
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/submitButton"
                 android:layout_width="match_parent"
@@ -86,4 +99,4 @@
 
     </ScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout> 
+</androidx.constraintlayout.widget.ConstraintLayout>

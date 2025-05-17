@@ -14,6 +14,7 @@ import com.example.dami.api.ApiConfig;
 import com.example.dami.models.JwtResponse;
 import com.example.dami.models.LoginRequest;
 import com.example.dami.retrofit.AuthApi;
+import com.example.dami.utils.JwtDecoder;
 import com.example.dami.utils.TokenManager;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -161,10 +162,26 @@ public class SignInActivity extends AppCompatActivity {
                                 if (response.isSuccessful() && response.body() != null) {
                                     // Store the token and user ID
                                     String token = response.body().getToken();
-                                    Long userId = response.body().getUserId();
+                                    
+                                    // Extract user ID from token
+                                    Long userId = JwtDecoder.getUserIdFromToken(token);
+                                    Log.d(TAG, "Extracted user ID from token: " + userId);
+                                    
+                                    if (userId == null) {
+                                        Log.e(TAG, "Failed to extract user ID from token");
+                                        Toast.makeText(SignInActivity.this,
+                                            "Error: Could not get user ID from token",
+                                            Toast.LENGTH_LONG).show();
+                                        return;
+                                    }
+                                    
                                     tokenManager.saveToken(token);
-                                    tokenManager.saveUserId(username); // Using username as user ID
-                                    //tokenManager.saveUserId(userId);
+                                    tokenManager.saveUserId(String.valueOf(userId));
+                                    
+                                    // Log what we stored
+                                    Log.d(TAG, "Stored token: " + tokenManager.getToken());
+                                    Log.d(TAG, "Stored user ID: " + tokenManager.getUserId());
+                                    
                                     // Navigate to main activity
                                     Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                                     startActivity(intent);

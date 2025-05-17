@@ -1,6 +1,7 @@
 package com.example.dami.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -127,10 +128,16 @@ public class CentersActivity extends AppCompatActivity {
     private void addBloodCenterMarkers() {
         for (BloodCenter center : bloodCenters) {
             Marker marker = new Marker(mapView);
-            marker.setPosition(new GeoPoint(center.getLatitude(), center.getLongitude()));
-            marker.setTitle(center.getNamecenter());
-            marker.setSnippet("Admin: " + center.getNameadmin());
-            mapView.getOverlays().add(marker);
+            try {
+                double latitude = Double.parseDouble(center.getLatitude());
+                double longitude = Double.parseDouble(center.getLongitude());
+                marker.setPosition(new GeoPoint(latitude, longitude));
+                marker.setTitle(center.getName());
+                marker.setSnippet(center.getLocation());
+                mapView.getOverlays().add(marker);
+            } catch (NumberFormatException e) {
+
+            }
         }
         mapView.invalidate();
     }

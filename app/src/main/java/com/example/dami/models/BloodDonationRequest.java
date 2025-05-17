@@ -15,10 +15,10 @@ public class BloodDonationRequest {
     @SerializedName("quantity")
     private double quantity;
 
-    @SerializedName("requestedBy")
+    @SerializedName("requestedById")
     private Long requestedBy;
 
-    @SerializedName("bloodCenter")
+    @SerializedName("bloodCenterId")
     private Long bloodCenter;
 
     public BloodDonationRequest() {

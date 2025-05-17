@@ -6,6 +6,6 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface PositionApi {
-    @POST("positions")
+    @POST("api/positions")
     Call<GpsPosition> updatePosition(@Body GpsPosition position);
 } 

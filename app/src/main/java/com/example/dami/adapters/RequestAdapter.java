@@ -86,7 +86,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
                 return;
             }
 
-            String url = "http://10.0.2.2:8080/api/donations";
+            String url = "http://10.0.2.2:8081/api/donations";
 
             RequestQueue queue = Volley.newRequestQueue(v.getContext());
 

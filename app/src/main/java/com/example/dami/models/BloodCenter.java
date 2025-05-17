@@ -2,17 +2,22 @@ package com.example.dami.models;
 
 public class BloodCenter {
     private Long id;
-    private String nameadmin;
-    private String nameCenter;
-    private String address;
-    private String phone;
-    private double latitude;
-    private double longitude;
+    private Long idAdmin;
+    private String latitude;
+    private String longitude;
+    private String name;
+    private String location;
 
-    public BloodCenter(Long id, String name, String namecenter) {
+    public BloodCenter() {
+    }
+
+    public BloodCenter(Long id, Long idAdmin, String latitude, String longitude, String name, String location) {
         this.id = id;
-        this.nameadmin = name;
-        this.nameCenter = namecenter;
+        this.idAdmin = idAdmin;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.name = name;
+        this.location = location;
     }
 
     public Long getId() {
@@ -23,51 +28,48 @@ public class BloodCenter {
         this.id = id;
     }
 
-    public String getNameadmin() {
-        return nameadmin;
+    public Long getIdAdmin() {
+        return idAdmin;
     }
 
-    public void setNameadmin(String nameadmin) {
-        this.nameadmin = nameadmin;
+    public void setIdAdmin(Long idAdmin) {
+        this.idAdmin = idAdmin;
     }
 
-    public String getNamecenter() {
-        return nameCenter;
-    }
-
-    public void setNamecenter(String namecenter) {
-        this.nameCenter = namecenter;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public double getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    @Override
+    public String toString() {
+        return name; // This will be used for the dropdown display
     }
 }
