@@ -13,4 +13,5 @@
     <color name="status_pending">#FFC107</color>
     <color name="status_rejected">#F44336</color>
     <color name="status_default">#9E9E9E</color>
+    <color name="history_done">#4CAF50</color>
 </resources>

@@ -17,6 +17,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dami.R;
 import com.example.dami.adapters.RequestAdapter;
+import com.example.dami.models.BloodCenter;
 import com.example.dami.models.BloodDonationRequestResponse;
 import com.example.dami.utils.TokenManager;
 
@@ -35,9 +36,12 @@ public class DonationsActivity extends AppCompatActivity {
     private RequestAdapter requestAdapter;
     private RequestQueue requestQueue;
     private TokenManager tokenManager;
+    private List<BloodCenter> allBloodCentersList = new ArrayList<>();
+    private Map<Long, String> bloodCenterIdToName = new HashMap<>();
 
     private static final String TAG = "DonationsActivity";
-    private static final String BASE_URL = "http://10.0.2.2:8080/api/requests";
+    private static final String BASE_URL = "http://10.0.2.2:8084/api/requests";
+    private static final String CENTERS_URL = "http://10.0.2.2:8083/api/centers";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,21 +50,70 @@ public class DonationsActivity extends AppCompatActivity {
 
         tokenManager = new TokenManager(this);
         setupViews();
+        setupBackButton();
         fetchDonationRequests();
+        fetchAllBloodCenters();
     }
 
     private void setupViews() {
+        ImageButton backButton = findViewById(R.id.backButton);
         donationsRecyclerView = findViewById(R.id.donationsRecyclerView);
         donationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        requestAdapter = new RequestAdapter(new ArrayList<>(), 1); // Assuming userId = 1
-        donationsRecyclerView.setAdapter(requestAdapter);
 
-        ImageButton backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> onBackPressed());
+        String userIdString = tokenManager.getUserId();  // e.g. "123"
+        long userId = Long.parseLong(userIdString);
+
+
+        requestAdapter = new RequestAdapter(new ArrayList<>(), userId, tokenManager, bloodCenterIdToName);
+        donationsRecyclerView.setAdapter(requestAdapter);
 
         requestQueue = Volley.newRequestQueue(this);
     }
 
+    private void setupBackButton() {
+        ImageButton backButton = findViewById(R.id.backButton);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> finish());
+        } else {
+            Log.e(TAG, "Back button is null. Check ID in layout.");
+        }
+    }
+    private void fetchAllBloodCenters() {
+        JsonArrayRequest request = new JsonArrayRequest(
+                Request.Method.GET,
+                CENTERS_URL,
+                null,
+                response -> {
+                    try {
+                        allBloodCentersList.clear();
+                        bloodCenterIdToName.clear();
+
+                        for (int i = 0; i < response.length(); i++) {
+                            JSONObject obj = response.getJSONObject(i);
+                            BloodCenter center = new BloodCenter();
+                            center.setId(obj.getLong("id"));
+                            center.setName(obj.getString("name"));
+                            allBloodCentersList.add(center);
+
+                            bloodCenterIdToName.put(center.getId(), center.getName());
+                        }
+
+                        // Now that centers are loaded, fetch requests
+                        fetchDonationRequests();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "Failed to parse blood centers", Toast.LENGTH_LONG).show();
+                    }
+                },
+                error -> {
+                    Log.e(TAG, "Failed to fetch blood centers", error);
+                    Toast.makeText(this, "Failed to load blood centers", Toast.LENGTH_LONG).show();
+                }
+        );
+
+        requestQueue.add(request);
+    }
     private void fetchDonationRequests() {
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
                 Request.Method.GET,

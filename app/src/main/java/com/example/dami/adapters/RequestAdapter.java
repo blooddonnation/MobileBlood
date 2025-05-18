@@ -1,7 +1,7 @@
 package com.example.dami.adapters;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,112 +12,152 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dami.R;
 import com.example.dami.models.BloodDonationRequestResponse;
+import com.example.dami.utils.TokenManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestViewHolder> {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private final long userId;
-    private List<BloodDonationRequestResponse> requestList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    // Constructor with userId
-    public RequestAdapter(List<BloodDonationRequestResponse> requestList, long userId) {
+public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestViewHolder> {
+
+    private final List<BloodDonationRequestResponse> requestList;
+    private final long userId;
+    private final TokenManager tokenManager;
+    private static final String TAG = "RequestAdapter";
+    //Map<Long, String> bloodCenterIdToName;
+    private final Map<Long, String> bloodCenterIdToName;
+    public RequestAdapter(List<BloodDonationRequestResponse> requestList, long userId, TokenManager tokenManager,  Map<Long, String> bloodCenterIdToName) {
         this.requestList = requestList;
         this.userId = userId;
-    }
-
-    // Overloaded constructor with default userId = 1
-    public RequestAdapter(List<BloodDonationRequestResponse> requestList) {
-        this(requestList, 1);
+        this.tokenManager = tokenManager;
+        this.bloodCenterIdToName = bloodCenterIdToName;
     }
 
     @NonNull
     @Override
     public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_donation, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_donation, parent, false);
         return new RequestViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RequestViewHolder holder, int position) {
         BloodDonationRequestResponse request = requestList.get(position);
+        Context context = holder.itemView.getContext();
+
         holder.bloodTypeTextView.setText(request.getBloodType());
         holder.quantityTextView.setText(String.format("%.1f units", request.getQuantity()));
         holder.statusTextView.setText(request.getStatus());
-        holder.centerNameTextView.setText(String.valueOf(request.getBloodCenter()));
+        String centerName = bloodCenterIdToName.get(request.getBloodCenter());
+        if (centerName == null) {
+            centerName = "Unknown Center";  // fallback
+        }
+        holder.centerNameTextView.setText(centerName);
 
-        int statusColor;
+        // Status color
+        int color;
         switch (request.getStatus().toUpperCase()) {
             case "APPROVED":
-                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_approved);
+                color = context.getResources().getColor(R.color.status_approved);
                 break;
             case "PENDING":
-                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_pending);
+                color = context.getResources().getColor(R.color.status_pending);
                 break;
             case "REJECTED":
-                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_rejected);
+                color = context.getResources().getColor(R.color.status_rejected);
                 break;
             default:
-                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_default);
+                color = context.getResources().getColor(R.color.status_default);
         }
+        holder.statusTextView.setTextColor(color);
 
-        holder.statusTextView.setTextColor(statusColor);
         holder.donateButton.setOnClickListener(v -> {
-            long requestId = request.getId();
-
-            JSONObject jsonBody = new JSONObject();
-            try {
-                jsonBody.put("donationRequest", requestId);
-                jsonBody.put("donorId", userId); // use passed userId
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+            String token = tokenManager.getToken();
+            if (token == null || token.isEmpty()) {
+                Toast.makeText(context, "You are not logged in!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            String url = "http://10.0.2.2:8081/api/donations";
+            Log.d(TAG, "Token being sent: " + token);
 
-            RequestQueue queue = Volley.newRequestQueue(v.getContext());
+            JSONObject jsonBody = new JSONObject();
+            try {
+                jsonBody.put("recipientType", "bloodcenter");
+                jsonBody.put("recipientId", request.getBloodCenter());
+                jsonBody.put("recipientName", request.getBloodCenterName());
+                jsonBody.put("volume", request.getQuantity());
+                jsonBody.put("location", "Casablanca");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Toast.makeText(context, "Error building donation request", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            JsonObjectRequest requestObj = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
-                    response -> Toast.makeText(v.getContext(), "Donation successful!", Toast.LENGTH_SHORT).show(),
-                    error -> Toast.makeText(v.getContext(), "Donation failed: " + error.toString(), Toast.LENGTH_LONG).show()
-            );
 
-            queue.add(requestObj);
+            String url = "http://10.0.2.2:8081/api/donations"; // Make sure your endpoint is correct
+            RequestQueue queue = Volley.newRequestQueue(context);
+
+            JsonObjectRequest postRequest = new JsonObjectRequest(
+                    Request.Method.POST,
+                    url,
+                    jsonBody,
+                    response -> {
+                        Toast.makeText(context, "Donation successful!", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "Response: " + response.toString());
+                    },
+                    error -> {
+                        Log.e(TAG, "Error: " + error.toString());
+                        if (error.networkResponse != null) {
+                            String body = new String(error.networkResponse.data);
+                            Log.e(TAG, "Body: " + body);
+                            Toast.makeText(context, "Error: " + body, Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(context, "Network error", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Content-Type", "application/json");
+                    headers.put("Authorization", "Bearer " + token);
+                    return headers;
+                }
+            };
+
+            queue.add(postRequest);
         });
     }
 
-    @Override
+        @Override
     public int getItemCount() {
         return requestList.size();
     }
 
     public void updateRequests(List<BloodDonationRequestResponse> newRequests) {
-        this.requestList.clear();
-        this.requestList.addAll(newRequests);
+        requestList.clear();
+        requestList.addAll(newRequests);
         notifyDataSetChanged();
     }
 
-    static class RequestViewHolder extends RecyclerView.ViewHolder {
+    public static class RequestViewHolder extends RecyclerView.ViewHolder {
         TextView bloodTypeTextView;
         TextView quantityTextView;
         TextView statusTextView;
         TextView centerNameTextView;
         Button donateButton;
 
-        RequestViewHolder(View itemView) {
+        public RequestViewHolder(@NonNull View itemView) {
             super(itemView);
             bloodTypeTextView = itemView.findViewById(R.id.bloodTypeTextView);
             quantityTextView = itemView.findViewById(R.id.quantityTextView);

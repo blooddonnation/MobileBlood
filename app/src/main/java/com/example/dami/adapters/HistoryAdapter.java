@@ -1,5 +1,6 @@
 package com.example.dami.adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,13 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
 import com.example.dami.R;
 import com.example.dami.models.DonationHistory;
 
+import java.util.List;
+
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
-    private List<DonationHistory> historyList;
+
+    private final List<DonationHistory> historyList;
 
     public HistoryAdapter(List<DonationHistory> historyList) {
         this.historyList = historyList;
@@ -30,11 +32,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
     @Override
     public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
-        DonationHistory history = historyList.get(position);
-        holder.centerNameTextView.setText(history.getCenterName());
-        holder.dateTextView.setText(history.getDate());
-        holder.bloodTypeTextView.setText(history.getBloodType());
-        holder.statusTextView.setText(history.getStatus());
+        DonationHistory donation = historyList.get(position);
+        Context context = holder.itemView.getContext();
+
+        holder.dateTextView.setText(donation.getDate()); // Example: "2024-04-01"
+        holder.centerNameTextView.setText(donation.getCenterName());
+        holder.bloodTypeTextView.setText(donation.getBloodType());
+        holder.quantityTextView.setText(String.format("%.1f units", donation.getStatus()));
+
+        int color = context.getResources().getColor(R.color.status_approved);
+        holder.bloodTypeTextView.setTextColor(color);
     }
 
     @Override
@@ -42,18 +49,24 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         return historyList.size();
     }
 
-    static class HistoryViewHolder extends RecyclerView.ViewHolder {
-        TextView centerNameTextView;
-        TextView dateTextView;
-        TextView bloodTypeTextView;
-        TextView statusTextView;
+    public void updateHistory(List<DonationHistory> newHistory) {
+        historyList.clear();
+        historyList.addAll(newHistory);
+        notifyDataSetChanged();
+    }
 
-        HistoryViewHolder(View itemView) {
+    public static class HistoryViewHolder extends RecyclerView.ViewHolder {
+        TextView dateTextView;
+        TextView centerNameTextView;
+        TextView bloodTypeTextView;
+        TextView quantityTextView;
+
+        public HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
-            centerNameTextView = itemView.findViewById(R.id.centerNameTextView);
             dateTextView = itemView.findViewById(R.id.dateTextView);
+            centerNameTextView = itemView.findViewById(R.id.centerNameTextView);
             bloodTypeTextView = itemView.findViewById(R.id.bloodTypeTextView);
-            statusTextView = itemView.findViewById(R.id.statusTextView);
+            quantityTextView = itemView.findViewById(R.id.quantityTextView);
         }
     }
-} 
+}

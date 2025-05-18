@@ -7,7 +7,7 @@ public class BloodDonationRequestResponse {
     private Double quantity;
     private Long requestedBy;
     private Long bloodCenter;
-
+    private String bloodCenterName;
     public BloodDonationRequestResponse() {
     }
 
@@ -20,6 +20,14 @@ public class BloodDonationRequestResponse {
         this.bloodCenter = bloodCenter;
     }
 
+
+    public String getBloodCenterName() {
+        return bloodCenterName;
+    }
+
+    public void setBloodCenterName(String bloodCenterName) {
+        this.bloodCenterName = bloodCenterName;
+    }
     public Long getId() {
         return id;
     }
