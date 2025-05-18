@@ -36,7 +36,7 @@ public class HistoryActivity extends AppCompatActivity {
     private TokenManager tokenManager;
     private List<BloodCenter> allBloodCentersList = new ArrayList<>();
     private static final String TAG = "HistoryActivity";
-    private static final String HISTORY_URL = "http://10.0.2.2:8081/api/history";
+    private static final String HISTORY_URL = "http://10.0.2.2:8081/api/donations/history";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,8 +45,9 @@ public class HistoryActivity extends AppCompatActivity {
 
         tokenManager = new TokenManager(this);
         setupRecyclerView();
-        setupBackButton();
+
         fetchDonationHistory();
+        setupBackButton();
     }
     private String getBloodCenterNameById(Long id) {
         for (BloodCenter center : allBloodCentersList) {
@@ -83,12 +84,12 @@ public class HistoryActivity extends AppCompatActivity {
                     for (int i = 0; i < response.length(); i++) {
                         try {
                             JSONObject obj = response.getJSONObject(i);
-                            String centerName = obj.getString("centerName");
-                            String bloodType = obj.getString("bloodType");
-                            String date = obj.getString("date");
-                            String status = obj.getString("status");
+                            String recipientName = obj.getString("recipientName");
+                            String donationDate = obj.getString("donationDate").substring(0, 10); // only date
+                            int volume = obj.getInt("volume");
+                            String location = obj.getString("location");
 
-                            historyList.add(new DonationHistory(centerName, bloodType, date, status));
+                            historyList.add(new DonationHistory(recipientName, donationDate, volume, location));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

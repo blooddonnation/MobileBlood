@@ -31,27 +31,12 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.Donati
     @Override
     public void onBindViewHolder(@NonNull DonationViewHolder holder, int position) {
         DonationHistory donation = donationList.get(position);
-        holder.centerNameTextView.setText(donation.getCenterName());
-        holder.dateTextView.setText(donation.getDate());
-        holder.bloodTypeTextView.setText(donation.getBloodType());
-        holder.statusTextView.setText(donation.getStatus());
+        holder.centerNameTextView.setText(donation.getRecipientName());
+        holder.dateTextView.setText(donation.getDonationDate());
+        holder.bloodTypeTextView.setText(donation.getLocation());
+        holder.statusTextView.setText(donation.getLocation());
         
-        // Set status color based on the status
-        int statusColor;
-        switch (donation.getStatus().toUpperCase()) {
-            case "COMPLETED":
-                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_approved);
-                break;
-            case "SCHEDULED":
-                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_pending);
-                break;
-            case "CANCELLED":
-                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_rejected);
-                break;
-            default:
-                statusColor = holder.itemView.getContext().getResources().getColor(R.color.status_default);
-        }
-        holder.statusTextView.setTextColor(statusColor);
+
     }
 
     @Override

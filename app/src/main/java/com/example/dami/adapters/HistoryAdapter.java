@@ -35,11 +35,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         DonationHistory donation = historyList.get(position);
         Context context = holder.itemView.getContext();
 
-        holder.dateTextView.setText(donation.getDate()); // Example: "2024-04-01"
-        holder.centerNameTextView.setText(donation.getCenterName());
-        holder.bloodTypeTextView.setText(donation.getBloodType());
-        holder.quantityTextView.setText(String.format("%.1f units", donation.getStatus()));
+        holder.dateTextView.setText(donation.getDonationDate());
+        holder.centerNameTextView.setText(donation.getRecipientName());
+        holder.bloodTypeTextView.setText(donation.getLocation());
 
+        // ✅ Fix: Convert volume (int) to string
+        holder.quantityTextView.setText(String.valueOf(donation.getVolume()) + " mL");
+
+        // Optional: Color customization
         int color = context.getResources().getColor(R.color.status_approved);
         holder.bloodTypeTextView.setTextColor(color);
     }

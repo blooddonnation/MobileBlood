@@ -1,50 +1,50 @@
 package com.example.dami.models;
 
 public class DonationHistory {
-    private String centerName;
-    private String bloodType;
-    private String date;
-    private String status;
+    private String recipientName;
+    private String donationDate;
+    private int volume;
+    private String location;
 
     public DonationHistory() {
     }
 
-    public DonationHistory(String centerName, String bloodType, String date, String status) {
-        this.centerName = centerName;
-        this.bloodType = bloodType;
-        this.date = date;
-        this.status = status;
+    public DonationHistory(String recipientName, String donationDate, int volume, String location) {
+        this.recipientName = recipientName;
+        this.donationDate = donationDate;
+        this.volume = volume;
+        this.location = location;
     }
 
-    public String getCenterName() {
-        return centerName;
+    public String getRecipientName() {
+        return recipientName;
     }
 
-    public void setCenterName(String centerName) {
-        this.centerName = centerName;
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
     }
 
-    public String getBloodType() {
-        return bloodType;
+    public String getDonationDate() {
+        return donationDate;
     }
 
-    public void setBloodType(String bloodType) {
-        this.bloodType = bloodType;
+    public void setDonationDate(String donationDate) {
+        this.donationDate = donationDate;
     }
 
-    public String getDate() {
-        return date;
+    public int getVolume() {
+        return volume;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setVolume(int volume) {
+        this.volume = volume;
     }
 
-    public String getStatus() {
-        return status;
+    public String getLocation() {
+        return location;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setLocation(String location) {
+        this.location = location;
     }
-} 
+}

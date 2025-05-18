@@ -15,6 +15,9 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_back"
         app:tint="@color/primary"
+        android:clickable="true"
+        android:focusable="true"
+
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
